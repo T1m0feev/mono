@@ -1543,19 +1543,24 @@ namespace System.Windows.Forms
 
 		void SetItemLocation (int index, int x, int y, int row, int col)
 		{
-			Point old_location = items_location [index];
-			if (old_location.X == x && old_location.Y == y)
-				return;
+			try {
+				Point old_location = items_location [index];
+				if (old_location.X == x && old_location.Y == y)
+					return;
 
-			items_location [index] = new Point (x, y);
-			items_matrix_location [index] = new ItemMatrixLocation (row, col);
+				items_location [index] = new Point (x, y);
+				items_matrix_location [index] = new ItemMatrixLocation (row, col);
 
-			//
-			// Initial position matches item's position in ListViewItemCollection
-			//
-			reordered_items_indices [index] = index;
+				//
+				// Initial position matches item's position in ListViewItemCollection
+				//
+				reordered_items_indices [index] = index;
+			} catch  (Exception e)
+			{
+				Console.WriteLine (e.Message);
+				Console.WriteLine (e.StackTrace);
+			}
 		}
-
 
 		void ShiftItemsPositions (int from, int to, bool forward)
 		{
@@ -2072,7 +2077,11 @@ namespace System.Windows.Forms
 				return items [display_index];
 			try {
 				return items [reordered_items_indices [display_index]];
-			} catch {
+			} catch  (Exception e)
+			{
+				Console.WriteLine (e.Message);
+				Console.WriteLine (e.StackTrace);
+			
 				return null;
 			}
 		}
@@ -3671,6 +3680,8 @@ namespace System.Windows.Forms
 			if (view_rect.Contains (bounds))
 				return;
 
+			try 
+			{
 			if (View != View.Details) {
 				if (bounds.Left < 0)
 					h_scroll.Value += bounds.Left;
@@ -3678,11 +3689,22 @@ namespace System.Windows.Forms
 				else if (this.RightToLeftLayout && bounds.Right > view_rect.Right)
 					h_scroll.Value += (bounds.Right - view_rect.Right);
 			}
+			} catch  (Exception e)
+			{
+				Console.WriteLine (e.Message);
+				Console.WriteLine (e.StackTrace);
+			}
 
+			try{
 			if (bounds.Top < view_rect.Y)
 				v_scroll.Value += bounds.Top - view_rect.Y;
 			else if (bounds.Bottom > view_rect.Bottom)
 				v_scroll.Value += (bounds.Bottom - view_rect.Bottom);
+			} catch  (Exception e)
+			{
+				Console.WriteLine (e.Message);
+				Console.WriteLine (e.StackTrace);
+			}
 		}
 
 		public ListViewItem FindItemWithText (string text)

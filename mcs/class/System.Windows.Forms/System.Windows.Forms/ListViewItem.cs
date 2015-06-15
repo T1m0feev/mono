@@ -923,193 +923,197 @@ namespace System.Windows.Forms
 				return;
 			int item_ht;
 			Rectangle total;
-			Size text_size = owner.text_size;
+
+			try {
+				Size text_size = owner.text_size;
 			
-			checkbox_rect = Rectangle.Empty;
-			if (owner.CheckBoxes)
-				checkbox_rect.Size = owner.CheckBoxSize;
-			switch (owner.View) {
-			case View.Details:
+				checkbox_rect = Rectangle.Empty;
+				if (owner.CheckBoxes)
+					checkbox_rect.Size = owner.CheckBoxSize;
+				switch (owner.View) {
+				case View.Details:
 				// LAMESPEC: MSDN says, "In all views except the details
 				// view of the ListView, this value specifies the same
 				// bounding rectangle as the Entire value." Actually, it
 				// returns same bounding rectangles for Item and Entire
 				// values in the case of Details view.
 
-				int x_offset = 0;
-				if (owner.SmallImageList != null)
-					x_offset = indent_count * owner.SmallImageList.ImageSize.Width;
+					int x_offset = 0;
+					if (owner.SmallImageList != null)
+						x_offset = indent_count * owner.SmallImageList.ImageSize.Width;
 
 				// Handle reordered column
-				if (owner.Columns.Count > 0)
-					checkbox_rect.X = owner.Columns[0].Rect.X + x_offset;
+					if (owner.Columns.Count > 0)
+						checkbox_rect.X = owner.Columns [0].Rect.X + x_offset;
 
-				icon_rect = label_rect = Rectangle.Empty;
-				icon_rect.X = checkbox_rect.Right + 2;
-				item_ht = owner.ItemSize.Height;
+					icon_rect = label_rect = Rectangle.Empty;
+					icon_rect.X = checkbox_rect.Right + 2;
+					item_ht = owner.ItemSize.Height;
 
-				if (owner.SmallImageList != null)
-					icon_rect.Width = owner.SmallImageList.ImageSize.Width;
+					if (owner.SmallImageList != null)
+						icon_rect.Width = owner.SmallImageList.ImageSize.Width;
 
-				label_rect.Height = icon_rect.Height = item_ht;
-				checkbox_rect.Y = item_ht - checkbox_rect.Height;
+					label_rect.Height = icon_rect.Height = item_ht;
+					checkbox_rect.Y = item_ht - checkbox_rect.Height;
 
-				label_rect.X = icon_rect.Width > 0 ? icon_rect.Right + 1 : icon_rect.Right;
+					label_rect.X = icon_rect.Width > 0 ? icon_rect.Right + 1 : icon_rect.Right;
 
-				if (owner.Columns.Count > 0)
-					label_rect.Width = owner.Columns[0].Wd - label_rect.X + checkbox_rect.X;
-				else
-					label_rect.Width = text_size.Width;
+					if (owner.Columns.Count > 0)
+						label_rect.Width = owner.Columns [0].Wd - label_rect.X + checkbox_rect.X;
+					else
+						label_rect.Width = text_size.Width;
 
-				SizeF text_sz = TextRenderer.MeasureString (Text, Font);
-				text_bounds = label_rect;
-				text_bounds.Width = (int) text_sz.Width;
+					SizeF text_sz = TextRenderer.MeasureString (Text, Font);
+					text_bounds = label_rect;
+					text_bounds.Width = (int)text_sz.Width;
 
-				item_rect = total = Rectangle.Union
+					item_rect = total = Rectangle.Union
 					(Rectangle.Union (checkbox_rect, icon_rect), label_rect);
-				bounds.Size = total.Size;
+					bounds.Size = total.Size;
 
-				item_rect.Width = 0;
-				bounds.Width = 0;
-				for (int i = 0; i < owner.Columns.Count; i++) {
-					item_rect.Width += owner.Columns [i].Wd;
-					bounds.Width += owner.Columns [i].Wd;
-				}
+					item_rect.Width = 0;
+					bounds.Width = 0;
+					for (int i = 0; i < owner.Columns.Count; i++) {
+						item_rect.Width += owner.Columns [i].Wd;
+						bounds.Width += owner.Columns [i].Wd;
+					}
 
 				// Bounds for sub items
-				int n = Math.Min (owner.Columns.Count, sub_items.Count);
-				for (int i = 0; i < n; i++) {
-					Rectangle col_rect = owner.Columns [i].Rect;
-					sub_items [i].SetBounds (col_rect.X, 0, col_rect.Width, item_ht);
-				}
-				break;
+					int n = Math.Min (owner.Columns.Count, sub_items.Count);
+					for (int i = 0; i < n; i++) {
+						Rectangle col_rect = owner.Columns [i].Rect;
+						sub_items [i].SetBounds (col_rect.X, 0, col_rect.Width, item_ht);
+					}
+					break;
 
-			case View.LargeIcon:
-				label_rect = icon_rect = Rectangle.Empty;
+				case View.LargeIcon:
+					label_rect = icon_rect = Rectangle.Empty;
 
-				SizeF sz = TextRenderer.MeasureString (Text, Font);
-				if ((int) sz.Width > text_size.Width) {
-					if (Focused && owner.InternalContainsFocus) {
-						int text_width = text_size.Width;
-						StringFormat format = new StringFormat ();
-						format.Alignment = StringAlignment.Center;
-						sz = TextRenderer.MeasureString (Text, Font, text_width, format);
-						text_size.Height = (int) sz.Height;
-					} else
-						text_size.Height = 2 * (int) sz.Height;
-				}
+					SizeF sz = TextRenderer.MeasureString (Text, Font);
+					if ((int)sz.Width > text_size.Width) {
+						if (Focused && owner.InternalContainsFocus) {
+							int text_width = text_size.Width;
+							StringFormat format = new StringFormat ();
+							format.Alignment = StringAlignment.Center;
+							sz = TextRenderer.MeasureString (Text, Font, text_width, format);
+							text_size.Height = (int)sz.Height;
+						} else
+							text_size.Height = 2 * (int)sz.Height;
+					}
 
-				if (owner.LargeImageList != null) {
-					icon_rect.Width = owner.LargeImageList.ImageSize.Width;
-					icon_rect.Height = owner.LargeImageList.ImageSize.Height;
-				}
+					if (owner.LargeImageList != null) {
+						icon_rect.Width = owner.LargeImageList.ImageSize.Width;
+						icon_rect.Height = owner.LargeImageList.ImageSize.Height;
+					}
 
-				if (checkbox_rect.Height > icon_rect.Height)
-					icon_rect.Y = checkbox_rect.Height - icon_rect.Height;
-				else
-					checkbox_rect.Y = icon_rect.Height - checkbox_rect.Height;
+					if (checkbox_rect.Height > icon_rect.Height)
+						icon_rect.Y = checkbox_rect.Height - icon_rect.Height;
+					else
+						checkbox_rect.Y = icon_rect.Height - checkbox_rect.Height;
 
-				if (text_size.Width <= icon_rect.Width) {
-			 		icon_rect.X = checkbox_rect.Width + 1;
-					label_rect.X = icon_rect.X + (icon_rect.Width - text_size.Width) / 2;
-					label_rect.Y = icon_rect.Bottom + 2;
-					label_rect.Size = text_size;
-				} else {
-					int centerX = text_size.Width / 2;
-					icon_rect.X = checkbox_rect.Width + 1 + centerX - icon_rect.Width / 2;
-					label_rect.X = checkbox_rect.Width + 1;
-					label_rect.Y = icon_rect.Bottom + 2;
-					label_rect.Size = text_size;
-				}
+					if (text_size.Width <= icon_rect.Width) {
+						icon_rect.X = checkbox_rect.Width + 1;
+						label_rect.X = icon_rect.X + (icon_rect.Width - text_size.Width) / 2;
+						label_rect.Y = icon_rect.Bottom + 2;
+						label_rect.Size = text_size;
+					} else {
+						int centerX = text_size.Width / 2;
+						icon_rect.X = checkbox_rect.Width + 1 + centerX - icon_rect.Width / 2;
+						label_rect.X = checkbox_rect.Width + 1;
+						label_rect.Y = icon_rect.Bottom + 2;
+						label_rect.Size = text_size;
+					}
 
-				item_rect = Rectangle.Union (icon_rect, label_rect);
-				total = Rectangle.Union (item_rect, checkbox_rect);
-				bounds.Size = total.Size;
-				break;
+					item_rect = Rectangle.Union (icon_rect, label_rect);
+					total = Rectangle.Union (item_rect, checkbox_rect);
+					bounds.Size = total.Size;
+					break;
 
-			case View.List:
-			case View.SmallIcon:
-				label_rect = icon_rect = Rectangle.Empty;
-				icon_rect.X = checkbox_rect.Width + 1;
-				item_ht = Math.Max (owner.CheckBoxSize.Height, text_size.Height);
+				case View.List:
+				case View.SmallIcon:
+					label_rect = icon_rect = Rectangle.Empty;
+					icon_rect.X = checkbox_rect.Width + 1;
+					item_ht = Math.Max (owner.CheckBoxSize.Height, text_size.Height);
 
-				if (owner.SmallImageList != null) {
-					item_ht = Math.Max (item_ht, owner.SmallImageList.ImageSize.Height);
-					icon_rect.Width = owner.SmallImageList.ImageSize.Width;
-					icon_rect.Height = owner.SmallImageList.ImageSize.Height;
-				}
+					if (owner.SmallImageList != null) {
+						item_ht = Math.Max (item_ht, owner.SmallImageList.ImageSize.Height);
+						icon_rect.Width = owner.SmallImageList.ImageSize.Width;
+						icon_rect.Height = owner.SmallImageList.ImageSize.Height;
+					}
 
-				checkbox_rect.Y = item_ht - checkbox_rect.Height;
-				label_rect.X = icon_rect.Right + 1;
-				label_rect.Width = text_size.Width;
-				label_rect.Height = icon_rect.Height = item_ht;
+					checkbox_rect.Y = item_ht - checkbox_rect.Height;
+					label_rect.X = icon_rect.Right + 1;
+					label_rect.Width = text_size.Width;
+					label_rect.Height = icon_rect.Height = item_ht;
 
-				item_rect = Rectangle.Union (icon_rect, label_rect);
-				total = Rectangle.Union (item_rect, checkbox_rect);
-				bounds.Size = total.Size;
-				break;
-			case View.Tile:
-				if (!Application.VisualStylesEnabled)
-					goto case View.LargeIcon;
+					item_rect = Rectangle.Union (icon_rect, label_rect);
+					total = Rectangle.Union (item_rect, checkbox_rect);
+					bounds.Size = total.Size;
+					break;
+				case View.Tile:
+					if (!Application.VisualStylesEnabled)
+						goto case View.LargeIcon;
 
-				label_rect = icon_rect = Rectangle.Empty;
+					label_rect = icon_rect = Rectangle.Empty;
 
-				if (owner.LargeImageList != null) {
-					icon_rect.Width = owner.LargeImageList.ImageSize.Width;
-					icon_rect.Height = owner.LargeImageList.ImageSize.Height;
-				}
+					if (owner.LargeImageList != null) {
+						icon_rect.Width = owner.LargeImageList.ImageSize.Width;
+						icon_rect.Height = owner.LargeImageList.ImageSize.Height;
+					}
 
-				int separation = 2;
-				SizeF tsize = TextRenderer.MeasureString (Text, Font);
-				int main_item_height = (int) Math.Ceiling (tsize.Height);
-				int main_item_width = (int) Math.Ceiling (tsize.Width);
-				sub_items [0].bounds.Height = main_item_height;
+					int separation = 2;
+					SizeF tsize = TextRenderer.MeasureString (Text, Font);
+					int main_item_height = (int)Math.Ceiling (tsize.Height);
+					int main_item_width = (int)Math.Ceiling (tsize.Width);
+					sub_items [0].bounds.Height = main_item_height;
 
 				// Set initial values for subitem's layout
-				int total_height = main_item_height;
-				int max_subitem_width = main_item_width;
+					int total_height = main_item_height;
+					int max_subitem_width = main_item_width;
 			
-				int count = Math.Min (owner.Columns.Count, sub_items.Count);
-				for (int i = 1; i < count; i++) { // Ignore first column and first subitem
-					ListViewSubItem sub_item = sub_items [i];
-					if (sub_item.Text == null || sub_item.Text.Length == 0)
-						continue;
+					int count = Math.Min (owner.Columns.Count, sub_items.Count);
+					for (int i = 1; i < count; i++) { // Ignore first column and first subitem
+						ListViewSubItem sub_item = sub_items [i];
+						if (sub_item.Text == null || sub_item.Text.Length == 0)
+							continue;
 
-					tsize = TextRenderer.MeasureString (sub_item.Text, sub_item.Font);
+						tsize = TextRenderer.MeasureString (sub_item.Text, sub_item.Font);
 				
-					int width = (int)Math.Ceiling (tsize.Width);
-					if (width > max_subitem_width)
-						max_subitem_width = width;
+						int width = (int)Math.Ceiling (tsize.Width);
+						if (width > max_subitem_width)
+							max_subitem_width = width;
 				
-					int height = (int)Math.Ceiling (tsize.Height);
-					total_height += height + separation;
+						int height = (int)Math.Ceiling (tsize.Height);
+						total_height += height + separation;
 				
-					sub_item.bounds.Height = height;
-				}
+						sub_item.bounds.Height = height;
+					}
 
-				max_subitem_width = Math.Min (max_subitem_width, owner.TileSize.Width - (icon_rect.Width + 4));
-				label_rect.X = icon_rect.Right + 4;
-				label_rect.Y = owner.TileSize.Height / 2 - total_height / 2;
-				label_rect.Width = max_subitem_width;
-				label_rect.Height = total_height;
+					max_subitem_width = Math.Min (max_subitem_width, owner.TileSize.Width - (icon_rect.Width + 4));
+					label_rect.X = icon_rect.Right + 4;
+					label_rect.Y = owner.TileSize.Height / 2 - total_height / 2;
+					label_rect.Width = max_subitem_width;
+					label_rect.Height = total_height;
 			
 				// Main item - always set bounds for it
-				sub_items [0].SetBounds (label_rect.X, label_rect.Y, max_subitem_width, sub_items [0].bounds.Height);
+					sub_items [0].SetBounds (label_rect.X, label_rect.Y, max_subitem_width, sub_items [0].bounds.Height);
 
 				// Second pass to assign bounds for every sub item
-				int current_y = sub_items [0].bounds.Bottom + separation;
-				for (int j = 1; j < count; j++) {
-					ListViewSubItem sub_item = sub_items [j];
-					if (sub_item.Text == null || sub_item.Text.Length == 0)
-						continue;
+					int current_y = sub_items [0].bounds.Bottom + separation;
+					for (int j = 1; j < count; j++) {
+						ListViewSubItem sub_item = sub_items [j];
+						if (sub_item.Text == null || sub_item.Text.Length == 0)
+							continue;
 
-					sub_item.SetBounds (label_rect.X, current_y, max_subitem_width, sub_item.bounds.Height);
-					current_y += sub_item.Bounds.Height + separation;
-				}
+						sub_item.SetBounds (label_rect.X, current_y, max_subitem_width, sub_item.bounds.Height);
+						current_y += sub_item.Bounds.Height + separation;
+					}
 				
-				item_rect = Rectangle.Union (icon_rect, label_rect);
-				bounds.Size = item_rect.Size;
-				break;
+					item_rect = Rectangle.Union (icon_rect, label_rect);
+					bounds.Size = item_rect.Size;
+					break;
+				}
+			} catch {
 			}
 			
 		}
