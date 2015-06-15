@@ -2070,7 +2070,11 @@ namespace System.Windows.Forms
 			// in virtual mode there's no reordering at all.
 			if (virtual_mode)
 				return items [display_index];
-			return items [reordered_items_indices [display_index]];
+			try {
+				return items [reordered_items_indices [display_index]];
+			} catch {
+				return null;
+			}
 		}
 
 		internal void SetItemAtDisplayIndex (int display_index, int index)
