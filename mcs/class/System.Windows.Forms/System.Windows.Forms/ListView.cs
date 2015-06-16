@@ -539,8 +539,10 @@ namespace System.Windows.Forms
 
 		[Browsable (false)]
 		[DesignerSerializationVisibility (DesignerSerializationVisibility.Hidden)]
-		public ListViewItem FocusedItem {
-			get {
+		public ListViewItem FocusedItem
+        {
+			get
+            {
 				if (focused_item_index == -1)
 					return null;
 
@@ -1543,7 +1545,8 @@ namespace System.Windows.Forms
 
 		void SetItemLocation (int index, int x, int y, int row, int col)
 		{
-			try {
+			try
+            {
 				Point old_location = items_location [index];
 				if (old_location.X == x && old_location.Y == y)
 					return;
@@ -1555,7 +1558,8 @@ namespace System.Windows.Forms
 				// Initial position matches item's position in ListViewItemCollection
 				//
 				reordered_items_indices [index] = index;
-			} catch  (Exception e)
+			}
+            catch (Exception e)
 			{
 				Console.WriteLine (e.Message);
 				Console.WriteLine (e.StackTrace);
@@ -2075,9 +2079,12 @@ namespace System.Windows.Forms
 			// in virtual mode there's no reordering at all.
 			if (virtual_mode)
 				return items [display_index];
-			try {
+			
+            try
+            {
 				return items [reordered_items_indices [display_index]];
-			} catch  (Exception e)
+			}
+            catch  (Exception e)
 			{
 				Console.WriteLine (e.Message);
 				Console.WriteLine (e.StackTrace);
@@ -2297,15 +2304,23 @@ namespace System.Windows.Forms
 			bool ctrl_pressed = (XplatUI.State.ModifierKeys & Keys.Control) != 0;
 			ListViewItem item = GetItemAtDisplayIndex (index);
 
-			if (shift_pressed && selection_start != null) {
+			if (shift_pressed && selection_start != null)
+            {
 				ArrayList list = new ArrayList ();
 				int start_index = selection_start.DisplayIndex;
 				int start = Math.Min (start_index, index);
 				int end = Math.Max (start_index, index);
-				if (View == View.Details) {
-					for (int i = start; i <= end; i++)
-						list.Add (GetItemAtDisplayIndex (i));
-				} else {
+				if (View == View.Details)
+                {
+                    for (int i = start; i <= end; i++)
+                    {
+                        ListViewItem lvi = GetItemAtDisplayIndex(i);
+                        if (!ReferenceEquals(null, lvi))
+                            list.Add(lvi);
+                    }
+				}
+                else
+                {
 					ItemMatrixLocation start_item_matrix_location = items_matrix_location [start];
 					ItemMatrixLocation end_item_matrix_location = items_matrix_location [end];
 					int left = Math.Min (start_item_matrix_location.Col, end_item_matrix_location.Col);
@@ -2313,29 +2328,44 @@ namespace System.Windows.Forms
 					int top = Math.Min (start_item_matrix_location.Row, end_item_matrix_location.Row);
 					int bottom = Math.Max (start_item_matrix_location.Row, end_item_matrix_location.Row);
 
-					for (int i = 0; i < items.Count; i++) {
+					for (int i = 0; i < items.Count; i++)
+                    {
 						ItemMatrixLocation item_matrix_loc = items_matrix_location [i];
 
-						if (item_matrix_loc.Row >= top && item_matrix_loc.Row <= bottom &&
-								item_matrix_loc.Col >= left && item_matrix_loc.Col <= right)
-							list.Add (GetItemAtDisplayIndex (i));
+                        if (item_matrix_loc.Row >= top && item_matrix_loc.Row <= bottom &&
+                            item_matrix_loc.Col >= left && item_matrix_loc.Col <= right)
+                        {
+                            ListViewItem lvi = GetItemAtDisplayIndex(i);
+                            if (!ReferenceEquals(null, lvi))
+                                list.Add(lvi);
+                        }
 					}
 				}
 				SelectItems (list);
-			} else if (ctrl_pressed) {
-				item.Selected = !item.Selected;
-				selection_start = item;
-			} else {
-				if (!reselect) {
+			} 
+            else if (ctrl_pressed)
+            {
+                if (!ReferenceEquals(null, item))
+                    item.Selected = !item.Selected;
+                selection_start = item;
+			}
+            else
+            {
+				if (!reselect)
+                {
 					// do not unselect, and reselect the item
-					foreach (int itemIndex in SelectedIndices) {
+					foreach (int itemIndex in SelectedIndices)
+                    {
 						if (index == itemIndex)
 							continue;
 						items [itemIndex].Selected = false;
 					}
-				} else {
+				}
+                else
+                {
 					SelectedItems.Clear ();
-					item.Selected = true;
+                    if (!ReferenceEquals(null, item))
+					    item.Selected = true;
 				}
 				selection_start = item;
 			}
@@ -2422,10 +2452,14 @@ namespace System.Windows.Forms
 			if (display_index == -1)
 				return;
 
-			if (MultiSelect)
-				UpdateMultiSelection (display_index, true);
-			else if (!GetItemAtDisplayIndex (display_index).Selected)
-				GetItemAtDisplayIndex (display_index).Selected = true;
+            if (MultiSelect)
+                UpdateMultiSelection(display_index, true);
+            else
+            {
+                ListViewItem lvi = GetItemAtDisplayIndex(display_index);
+                if (!ReferenceEquals(null, lvi) && !lvi.Selected)
+                    lvi.Selected = true;
+            }
 
 			SetFocusedItem (display_index);
 			EnsureVisible (GetItemIndex (display_index)); // Index in Items collection, not display index
@@ -2550,23 +2584,36 @@ namespace System.Windows.Forms
 
 			bool BoxIntersectsText (int index)
 			{
-				Rectangle r = owner.GetItemAtDisplayIndex (index).TextBounds;
-				return BoxSelectRectangle.IntersectsWith (r);
+                ListViewItem lvi = GetItemAtDisplayIndex(index);
+                if (!ReferenceEquals(null, lvi))
+                {
+                    Rectangle r = owner.GetItemAtDisplayIndex(index).TextBounds;
+                    return BoxSelectRectangle.IntersectsWith(r);
+                }
+                return false;
 			}
 
-			ArrayList BoxSelectedItems {
-				get {
+			ArrayList BoxSelectedItems
+            {
+				get
+                {
 					ArrayList result = new ArrayList ();
-					for (int i = 0; i < owner.Items.Count; i++) {
+					for (int i = 0; i < owner.Items.Count; i++)
+                    {
 						bool intersects;
+
 						// Can't iterate over specific items properties in virtualmode
 						if (owner.View == View.Details && !owner.FullRowSelect && !owner.VirtualMode)
 							intersects = BoxIntersectsText (i);
 						else
 							intersects = BoxIntersectsItem (i);
 
-						if (intersects)
-							result.Add (owner.GetItemAtDisplayIndex (i));
+                        if (intersects)
+                        {
+                            ListViewItem lvi = owner.GetItemAtDisplayIndex(i);
+                            if (!ReferenceEquals(null, lvi))
+                                result.Add(lvi);
+                        }
 					}
 					return result;
 				}
@@ -2627,13 +2674,16 @@ namespace System.Windows.Forms
 				bool box_selecting = false;
 				Size item_size = owner.ItemSize;
 				Point pt = new Point (me.X, me.Y);
-				for (int i = 0; i < owner.items.Count; i++) {
+				for (int i = 0; i < owner.items.Count; i++)
+                {
 					Rectangle item_rect = new Rectangle (owner.GetItemLocation (i), item_size);
 					if (!item_rect.Contains (pt))
 						continue;
 
 					// Actual item in 'i' position
 					ListViewItem item = owner.GetItemAtDisplayIndex (i);
+                    if (ReferenceEquals(null, item))
+                        break;
 
 					if (item.CheckRectReal.Contains (pt)) {
 						// Don't modify check state if we have only one image
@@ -3306,10 +3356,19 @@ namespace System.Windows.Forms
 		
 		private void SetFocusedItem (int display_index)
 		{
-			if (display_index != -1)
-				GetItemAtDisplayIndex (display_index).Focused = true;
-			else if (focused_item_index != -1 && focused_item_index < items.Count) // Previous focused item
-				GetItemAtDisplayIndex (focused_item_index).Focused = false;
+            if (display_index != -1)
+            {
+                ListViewItem lvi = GetItemAtDisplayIndex(display_index);
+                if (!ReferenceEquals(null, lvi))
+                    lvi.Focused = true;
+            }
+            else if (focused_item_index != -1 && focused_item_index < items.Count) // Previous focused item
+            {
+                ListViewItem lvi = GetItemAtDisplayIndex(focused_item_index);
+                if (!ReferenceEquals(null, lvi))
+                    lvi.Focused = false;
+            }
+
 			focused_item_index = display_index;
 			if (display_index == -1)
 				OnUIAFocusedItemChanged ();
@@ -3682,25 +3741,28 @@ namespace System.Windows.Forms
 
 			try 
 			{
-			if (View != View.Details) {
-				if (bounds.Left < 0)
-					h_scroll.Value += bounds.Left;
-				// Don't shift right unless right-to-left layout is active. (Xamarin bug 22483)
-				else if (this.RightToLeftLayout && bounds.Right > view_rect.Right)
-					h_scroll.Value += (bounds.Right - view_rect.Right);
+			    if (View != View.Details) {
+				    if (bounds.Left < 0)
+					    h_scroll.Value += bounds.Left;
+				    // Don't shift right unless right-to-left layout is active. (Xamarin bug 22483)
+				    else if (this.RightToLeftLayout && bounds.Right > view_rect.Right)
+					    h_scroll.Value += (bounds.Right - view_rect.Right);
+			    }
 			}
-			} catch  (Exception e)
+            catch  (Exception e)
 			{
 				Console.WriteLine (e.Message);
 				Console.WriteLine (e.StackTrace);
 			}
 
-			try{
-			if (bounds.Top < view_rect.Y)
-				v_scroll.Value += bounds.Top - view_rect.Y;
-			else if (bounds.Bottom > view_rect.Bottom)
-				v_scroll.Value += (bounds.Bottom - view_rect.Bottom);
-			} catch  (Exception e)
+			try
+            {
+			    if (bounds.Top < view_rect.Y)
+				    v_scroll.Value += bounds.Top - view_rect.Y;
+			    else if (bounds.Bottom > view_rect.Bottom)
+				    v_scroll.Value += (bounds.Bottom - view_rect.Bottom);
+			}
+            catch (Exception e)
 			{
 				Console.WriteLine (e.Message);
 				Console.WriteLine (e.StackTrace);

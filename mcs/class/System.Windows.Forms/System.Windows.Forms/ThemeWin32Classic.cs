@@ -2662,8 +2662,12 @@ namespace System.Windows.Forms
 			if (control.VirtualMode)
 				control.OnCacheVirtualItems (new CacheVirtualItemsEventArgs (first, lastvisibleindex));
 
-			for (int i = first; i <= lastvisibleindex; i++) {					
+			for (int i = first; i <= lastvisibleindex; i++)
+            {					
 				ListViewItem item = control.GetItemAtDisplayIndex (i);
+                if (ReferenceEquals(null, item))
+                    continue;
+
 				if (clip.IntersectsWith (item.Bounds)) {
 					bool owner_draw = false;
 					if (control.OwnerDraw)
