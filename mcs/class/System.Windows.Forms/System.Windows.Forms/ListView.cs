@@ -388,8 +388,10 @@ namespace System.Windows.Forms
 			get { return ThemeEngine.Current.ListViewDefaultSize; }
 		}
 		protected override bool DoubleBuffered {
-			get {
-				return base.DoubleBuffered;
+			get 
+            {
+                return false;
+				//return base.DoubleBuffered;
 			}
 			set {
 				base.DoubleBuffered = value;
