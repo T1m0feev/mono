@@ -390,8 +390,8 @@ namespace System.Windows.Forms
 		protected override bool DoubleBuffered {
 			get 
             {
-                return false;
-				//return base.DoubleBuffered;
+                //return false;
+				return base.DoubleBuffered;
 			}
 			set {
 				base.DoubleBuffered = value;
