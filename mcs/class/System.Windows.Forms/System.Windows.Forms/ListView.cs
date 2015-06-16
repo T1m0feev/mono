@@ -2315,7 +2315,7 @@ namespace System.Windows.Forms
                     for (int i = start; i <= end; i++)
                     {
                         ListViewItem lvi = GetItemAtDisplayIndex(i);
-                        if (!ReferenceEquals(null, lvi))
+                        if (lvi != null)
                             list.Add(lvi);
                     }
 				}
@@ -2336,7 +2336,7 @@ namespace System.Windows.Forms
                             item_matrix_loc.Col >= left && item_matrix_loc.Col <= right)
                         {
                             ListViewItem lvi = GetItemAtDisplayIndex(i);
-                            if (!ReferenceEquals(null, lvi))
+                            if (lvi != null)
                                 list.Add(lvi);
                         }
 					}
@@ -2345,7 +2345,7 @@ namespace System.Windows.Forms
 			} 
             else if (ctrl_pressed)
             {
-                if (!ReferenceEquals(null, item))
+                if (item != null)
                     item.Selected = !item.Selected;
                 selection_start = item;
 			}
@@ -2364,7 +2364,7 @@ namespace System.Windows.Forms
                 else
                 {
 					SelectedItems.Clear ();
-                    if (!ReferenceEquals(null, item))
+                    if (item != null)
 					    item.Selected = true;
 				}
 				selection_start = item;
@@ -2457,7 +2457,7 @@ namespace System.Windows.Forms
             else
             {
                 ListViewItem lvi = GetItemAtDisplayIndex(display_index);
-                if (!ReferenceEquals(null, lvi) && !lvi.Selected)
+                if (lvi != null && !lvi.Selected)
                     lvi.Selected = true;
             }
 
@@ -2584,10 +2584,10 @@ namespace System.Windows.Forms
 
 			bool BoxIntersectsText (int index)
 			{
-                ListViewItem lvi = GetItemAtDisplayIndex(index);
-                if (!ReferenceEquals(null, lvi))
+                ListViewItem lvi = owner.GetItemAtDisplayIndex(index);
+                if (lvi != null)
                 {
-                    Rectangle r = owner.GetItemAtDisplayIndex(index).TextBounds;
+                    Rectangle r = lvi.TextBounds;
                     return BoxSelectRectangle.IntersectsWith(r);
                 }
                 return false;
@@ -2611,7 +2611,7 @@ namespace System.Windows.Forms
                         if (intersects)
                         {
                             ListViewItem lvi = owner.GetItemAtDisplayIndex(i);
-                            if (!ReferenceEquals(null, lvi))
+                            if (lvi != null)
                                 result.Add(lvi);
                         }
 					}
@@ -2682,7 +2682,7 @@ namespace System.Windows.Forms
 
 					// Actual item in 'i' position
 					ListViewItem item = owner.GetItemAtDisplayIndex (i);
-                    if (ReferenceEquals(null, item))
+                    if (item == null)
                         break;
 
 					if (item.CheckRectReal.Contains (pt)) {
@@ -3359,13 +3359,13 @@ namespace System.Windows.Forms
             if (display_index != -1)
             {
                 ListViewItem lvi = GetItemAtDisplayIndex(display_index);
-                if (!ReferenceEquals(null, lvi))
+                if (lvi != null)
                     lvi.Focused = true;
             }
             else if (focused_item_index != -1 && focused_item_index < items.Count) // Previous focused item
             {
                 ListViewItem lvi = GetItemAtDisplayIndex(focused_item_index);
-                if (!ReferenceEquals(null, lvi))
+                if (lvi != null)
                     lvi.Focused = false;
             }
 

@@ -2665,9 +2665,9 @@ namespace System.Windows.Forms
 			for (int i = first; i <= lastvisibleindex; i++)
             {					
 				ListViewItem item = control.GetItemAtDisplayIndex (i);
-                if (ReferenceEquals(null, item))
+                if (item == null)
                     continue;
-
+                
 				if (clip.IntersectsWith (item.Bounds)) {
 					bool owner_draw = false;
 					if (control.OwnerDraw)
